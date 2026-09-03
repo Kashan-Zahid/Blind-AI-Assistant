@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blind AI Assistant</string>
+    <string name="accessibility_service_name">Blind AI Assistant Screen Reader &amp; Automation</string>
+    <string name="accessibility_service_desc">Provides full hands-free voice screen reading, WhatsApp messaging, YouTube control, PDF reading, notification reading, and button clicking for blind and visually impaired users.</string>
+</resources>
