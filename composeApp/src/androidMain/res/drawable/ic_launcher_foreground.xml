@@ -1,0 +1,48 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:pivotX="54"
+        android:pivotY="54">
+        <!-- Vision Eye Outline Arc -->
+        <path
+            android:strokeWidth="4"
+            android:strokeColor="#FFFFFF"
+            android:strokeLineCap="round"
+            android:pathData="M24,54 C32,36 76,36 84,54 C76,72 32,72 24,54 Z" />
+
+        <!-- Inner Glowing Iris Ring -->
+        <path
+            android:strokeWidth="3.5"
+            android:strokeColor="#38BDF8"
+            android:pathData="M54,54m-14,0a14,14 0,1,1 28,0a14,14 0,1,1 -28,0" />
+
+        <!-- Center AI Pupil Core -->
+        <path
+            android:fillColor="#F59E0B"
+            android:pathData="M54,54m-7,0a7,7 0,1,1 14,0a7,7 0,1,1 -14,0" />
+
+        <!-- Central Sparkle / Light Core -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M52,50a2.5,2.5 0,1,1 5,0a2.5,2.5 0,1,1 -5,0" />
+
+        <!-- Audio Waveform Bars (Left Side) -->
+        <path
+            android:strokeWidth="3"
+            android:strokeColor="#F59E0B"
+            android:strokeLineCap="round"
+            android:pathData="M16,46 L16,62 M10,50 L10,58" />
+
+        <!-- Audio Waveform Bars (Right Side) -->
+        <path
+            android:strokeWidth="3"
+            android:strokeColor="#F59E0B"
+            android:strokeLineCap="round"
+            android:pathData="M92,46 L92,62 M98,50 L98,58" />
+    </group>
+</vector>

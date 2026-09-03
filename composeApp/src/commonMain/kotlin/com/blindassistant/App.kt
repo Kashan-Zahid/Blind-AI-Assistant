@@ -20,9 +20,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
@@ -39,11 +38,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.zIndex
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import kotlin.math.sin
 
 @Composable
@@ -62,14 +61,23 @@ fun App(
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
-    // Dynamic Color Palette for Accessibility & High Contrast
-    val accentGold = Color(0xFFFFD600)
-    val listeningRed = Color(0xFFFF2A55)
-    val speakingGreen = Color(0xFF00E676)
-    val processingPurple = Color(0xFF7C4DFF)
-    val surfaceDark = Color(0xFF141419)
-    val cardBackground = Color(0xFF1C1C24)
-    val outlineBorder = Color(0xFF2E2E3C)
+    // -------------------------------------------------------------
+    // Clean Modern Light Theme Palette (Accessibility & High Contrast)
+    // -------------------------------------------------------------
+    val backgroundCanvas = Color(0xFFF8FAFC) // Slate 50 clean light background
+    val surfaceCard = Color(0xFFFFFFFF)      // Pure white containers
+    val surfaceSubtle = Color(0xFFF1F5F9)    // Slate 100
+    val borderLight = Color(0xFFE2E8F0)      // Slate 200 soft border
+    val borderActive = Color(0xFFCBD5E1)     // Slate 300
+    val textPrimary = Color(0xFF0F172A)      // Slate 900 / Deep Obsidian
+    val textSecondary = Color(0xFF334155)    // Slate 700 readable body text
+    val textMuted = Color(0xFF64748B)        // Slate 500
+
+    // Dynamic Accents
+    val accentBlue = Color(0xFF2563EB)       // Vibrant Royal Cobalt
+    val listeningRed = Color(0xFFDC2626)     // High-Visibility Crimson
+    val speakingGreen = Color(0xFF16A34A)    // High-Contrast Emerald Green
+    val processingPurple = Color(0xFF7C3AED) // Vibrant Electric Purple
 
     val isProcessing = status.contains("Processing", ignoreCase = true)
 
@@ -78,7 +86,7 @@ fun App(
             isListening -> listeningRed
             isSpeaking -> speakingGreen
             isProcessing -> processingPurple
-            else -> accentGold
+            else -> accentBlue
         },
         animationSpec = tween(400),
         label = "themeColor"
@@ -89,7 +97,7 @@ fun App(
 
     val idlePulse by infiniteTransition.animateFloat(
         initialValue = 1.0f,
-        targetValue = 1.05f,
+        targetValue = 1.04f,
         animationSpec = infiniteRepeatable(
             animation = tween(2000, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -99,7 +107,7 @@ fun App(
 
     val auraScale1 by infiniteTransition.animateFloat(
         initialValue = 1.0f,
-        targetValue = 1.42f,
+        targetValue = 1.38f,
         animationSpec = infiniteRepeatable(
             animation = tween(1600, easing = LinearOutSlowInEasing),
             repeatMode = RepeatMode.Restart
@@ -109,7 +117,7 @@ fun App(
 
     val auraScale2 by infiniteTransition.animateFloat(
         initialValue = 1.0f,
-        targetValue = 1.72f,
+        targetValue = 1.68f,
         animationSpec = infiniteRepeatable(
             animation = tween(2400, delayMillis = 350, easing = LinearOutSlowInEasing),
             repeatMode = RepeatMode.Restart
@@ -118,8 +126,8 @@ fun App(
     )
 
     val auraAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.45f,
-        targetValue = 0.1f,
+        initialValue = 0.35f,
+        targetValue = 0.05f,
         animationSpec = infiniteRepeatable(
             animation = tween(1600, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
@@ -128,29 +136,35 @@ fun App(
     )
 
     MaterialTheme(
-        colorScheme = darkColorScheme(
+        colorScheme = lightColorScheme(
             primary = currentThemeColor,
-            surface = surfaceDark,
-            background = Color.Black
+            surface = surfaceCard,
+            background = backgroundCanvas,
+            onPrimary = Color.White,
+            onSurface = textPrimary,
+            onBackground = textPrimary
         )
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Color.Black
+            color = backgroundCanvas
         ) {
             Box(Modifier.fillMaxSize()) {
-                // Ambient Background Glow
+                // Subtle Ambient Gradient Background
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(currentThemeColor.copy(alpha = 0.08f), Color.Black)
+                                colors = listOf(
+                                    currentThemeColor.copy(alpha = 0.06f),
+                                    backgroundCanvas
+                                )
                             )
                         )
                 )
 
-                // Small Floating Camera Popup
+                // Small Floating Camera Popup with Live HUD
                 androidx.compose.animation.AnimatedVisibility(
                     visible = cameraPopupState.isVisible,
                     enter = androidx.compose.animation.fadeIn(tween(300)) + androidx.compose.animation.slideInVertically(initialOffsetY = { -it / 2 }),
@@ -163,9 +177,9 @@ fun App(
                 ) {
                     Surface(
                         shape = RoundedCornerShape(22.dp),
-                        color = Color(0xFF14141E),
-                        border = BorderStroke(2.dp, accentGold.copy(alpha = 0.85f)),
-                        shadowElevation = 18.dp,
+                        color = surfaceCard,
+                        border = BorderStroke(2.dp, currentThemeColor),
+                        shadowElevation = 16.dp,
                         modifier = Modifier
                             .fillMaxWidth()
                             .semantics(mergeDescendants = true) {
@@ -191,28 +205,29 @@ fun App(
                                         text = cameraPopupState.title.uppercase(),
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Black,
-                                        color = accentGold,
+                                        color = currentThemeColor,
                                         letterSpacing = 1.2.sp
                                     )
                                 }
 
                                 Surface(
                                     shape = CircleShape,
-                                    color = Color.White.copy(alpha = 0.12f),
+                                    color = surfaceSubtle,
+                                    border = BorderStroke(1.dp, borderLight),
                                     modifier = Modifier.clickable { voiceService.dismissCameraPopup() }
                                 ) {
                                     Box(
                                         modifier = Modifier.size(28.dp),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text("✕", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                        Text("✕", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = textPrimary)
                                     }
                                 }
                             }
 
                             Spacer(Modifier.height(10.dp))
 
-                            // Viewfinder Area with Actual Camera Image Rendering
+                            // Viewfinder Area with Camera Feed
                             val capturedBitmap = remember(cameraPopupState.base64Thumbnail) {
                                 cameraPopupState.base64Thumbnail?.let { decodeBase64ToImageBitmap(it) }
                             }
@@ -222,8 +237,8 @@ fun App(
                                     .fillMaxWidth()
                                     .height(180.dp)
                                     .clip(RoundedCornerShape(14.dp))
-                                    .background(Color(0xFF08080C))
-                                    .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(14.dp)),
+                                    .background(Color(0xFF0F172A))
+                                    .border(1.dp, borderActive, RoundedCornerShape(14.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 if (capturedBitmap != null) {
@@ -242,9 +257,9 @@ fun App(
                                             .background(
                                                 Brush.verticalGradient(
                                                     colors = listOf(
-                                                        Color.Black.copy(alpha = 0.35f),
+                                                        Color.Black.copy(alpha = 0.3f),
                                                         Color.Transparent,
-                                                        Color.Black.copy(alpha = 0.55f)
+                                                        Color.Black.copy(alpha = 0.45f)
                                                     )
                                                 )
                                             )
@@ -257,12 +272,12 @@ fun App(
                                     verticalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text("⌜", fontSize = 20.sp, color = accentGold.copy(alpha = 0.85f), fontWeight = FontWeight.Black)
-                                        Text("⌝", fontSize = 20.sp, color = accentGold.copy(alpha = 0.85f), fontWeight = FontWeight.Black)
+                                        Text("⌜", fontSize = 20.sp, color = Color(0xFFF59E0B), fontWeight = FontWeight.Black)
+                                        Text("⌝", fontSize = 20.sp, color = Color(0xFFF59E0B), fontWeight = FontWeight.Black)
                                     }
                                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                        Text("⌞", fontSize = 20.sp, color = accentGold.copy(alpha = 0.85f), fontWeight = FontWeight.Black)
-                                        Text("⌟", fontSize = 20.sp, color = accentGold.copy(alpha = 0.85f), fontWeight = FontWeight.Black)
+                                        Text("⌞", fontSize = 20.sp, color = Color(0xFFF59E0B), fontWeight = FontWeight.Black)
+                                        Text("⌟", fontSize = 20.sp, color = Color(0xFFF59E0B), fontWeight = FontWeight.Black)
                                     }
                                 }
 
@@ -272,10 +287,10 @@ fun App(
                                         Text("📷", fontSize = 32.sp)
                                         Spacer(Modifier.height(6.dp))
                                         Text(
-                                            text = "CAPTURING CAMERA FRAME...",
+                                            text = "STABILIZING & CAPTURING FRAME...",
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Black,
-                                            color = accentGold,
+                                            color = Color(0xFFF59E0B),
                                             letterSpacing = 1.sp
                                         )
                                     }
@@ -309,20 +324,21 @@ fun App(
                                     text = cameraPopupState.status,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = Color.White.copy(alpha = 0.85f),
+                                    color = textSecondary,
                                     modifier = Modifier.weight(1f)
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = accentGold.copy(alpha = 0.18f),
+                                    color = currentThemeColor.copy(alpha = 0.12f),
+                                    border = BorderStroke(1.dp, currentThemeColor.copy(alpha = 0.3f)),
                                     modifier = Modifier.clickable { voiceService.dismissCameraPopup() }
                                 ) {
                                     Text(
                                         text = "Dismiss",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = accentGold,
+                                        color = currentThemeColor,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                                     )
                                 }
@@ -339,27 +355,37 @@ fun App(
                         .padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    // Header Row with Custom Vector Logo Badge
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
-                            Text("BLIND AI", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color.White)
-                            Text("VOICE ASSISTANT", fontSize = 11.sp, fontWeight = FontWeight.ExtraBold, color = currentThemeColor, letterSpacing = 2.5.sp)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            AppLogoBadge(themeColor = currentThemeColor, modifier = Modifier.size(46.dp))
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text("BLIND AI", fontSize = 26.sp, fontWeight = FontWeight.Black, color = textPrimary)
+                                Text("VOICE ASSISTANT", fontSize = 11.sp, fontWeight = FontWeight.ExtraBold, color = currentThemeColor, letterSpacing = 2.sp)
+                            }
                         }
 
                         // Status Pill Badge
                         Surface(
                             shape = RoundedCornerShape(24.dp),
-                            color = currentThemeColor.copy(alpha = 0.14f),
-                            border = BorderStroke(1.5.dp, currentThemeColor.copy(alpha = 0.45f)),
+                            color = currentThemeColor.copy(alpha = 0.1f),
+                            border = BorderStroke(1.5.dp, currentThemeColor.copy(alpha = 0.35f)),
                             modifier = Modifier.clickable { if (isSpeaking) voiceService.stopSpeaking() else if (isListening) voiceService.stopListening() }
                         ) {
                             Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(currentThemeColor))
+                                Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(currentThemeColor))
                                 Spacer(Modifier.width(8.dp))
-                                Text(when { isListening -> "LISTENING"; isSpeaking -> "SPEAKING"; isProcessing -> "PROCESSING"; else -> "READY" }, fontSize = 11.sp, fontWeight = FontWeight.Black, color = Color.White)
+                                Text(
+                                    text = when { isListening -> "LISTENING"; isSpeaking -> "SPEAKING"; isProcessing -> "PROCESSING"; else -> "READY" },
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = currentThemeColor
+                                )
                             }
                         }
                     }
@@ -369,15 +395,16 @@ fun App(
                     // Microphone Area
                     Box(contentAlignment = Alignment.Center, modifier = Modifier.height(240.dp)) {
                         if (isListening || isSpeaking) {
-                            Box(modifier = Modifier.size(180.dp).scale(auraScale1).border(2.5.dp, currentThemeColor.copy(alpha = auraAlpha), CircleShape))
-                            Box(modifier = Modifier.size(180.dp).scale(auraScale2).border(1.5.dp, currentThemeColor.copy(alpha = auraAlpha * 0.6f), CircleShape))
+                            Box(modifier = Modifier.size(180.dp).scale(auraScale1).border(2.5.dp, currentThemeColor.copy(alpha = auraAlpha * 0.5f), CircleShape))
+                            Box(modifier = Modifier.size(180.dp).scale(auraScale2).border(1.5.dp, currentThemeColor.copy(alpha = auraAlpha * 0.3f), CircleShape))
                         }
                         Box(
                             modifier = Modifier
                                 .size(175.dp)
                                 .scale(if (isListening || isSpeaking) 1.03f else idlePulse)
+                                .shadow(elevation = 12.dp, shape = CircleShape, spotColor = currentThemeColor)
                                 .clip(CircleShape)
-                                .background(Brush.radialGradient(listOf(currentThemeColor, currentThemeColor.copy(alpha = 0.55f))))
+                                .background(Brush.radialGradient(listOf(currentThemeColor, currentThemeColor.copy(alpha = 0.85f))))
                                 .pointerInput(Unit) {
                                     detectTapGestures(
                                         onPress = {
@@ -388,7 +415,6 @@ fun App(
                                             tryAwaitRelease()
                                             val duration = pressStart.elapsedNow()
                                             // Only stop if the user intentionally held down the button (>450ms)
-                                            // If tapped (<450ms), let it stay listening for speech!
                                             if (duration.inWholeMilliseconds > 450L && isListening) {
                                                 voiceService.stopListening()
                                             }
@@ -406,9 +432,14 @@ fun App(
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                                CustomMicIcon(tint = Color.Black, isListening = isListening, modifier = Modifier.size(46.dp))
+                                CustomMicIcon(tint = Color.White, isListening = isListening, modifier = Modifier.size(46.dp))
                                 Spacer(Modifier.height(6.dp))
-                                Text(if (isListening) "TAP OR RELEASE" else if (isSpeaking) "TAP TO STOP" else "TAP TO SPEAK", fontSize = 10.sp, fontWeight = FontWeight.Black, color = Color.Black)
+                                Text(
+                                    if (isListening) "TAP OR RELEASE" else if (isSpeaking) "TAP TO STOP" else "TAP TO SPEAK",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White
+                                )
                             }
                         }
                     }
@@ -423,8 +454,9 @@ fun App(
                             .fillMaxWidth()
                             .weight(1f),
                         shape = RoundedCornerShape(24.dp),
-                        color = cardBackground,
-                        border = BorderStroke(1.5.dp, outlineBorder)
+                        color = surfaceCard,
+                        border = BorderStroke(1.5.dp, borderLight),
+                        shadowElevation = 3.dp
                     ) {
                         Column(
                             modifier = Modifier
@@ -445,14 +477,15 @@ fun App(
                                     },
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Black,
-                                    color = if (isListening) listeningRed else Color.White.copy(alpha = 0.6f),
+                                    color = if (isListening) listeningRed else textMuted,
                                     letterSpacing = 1.5.sp
                                 )
 
                                 if (transcript.isNotBlank() || assistantReply.isNotBlank()) {
                                     Surface(
                                         shape = RoundedCornerShape(12.dp),
-                                        color = Color.White.copy(alpha = 0.08f),
+                                        color = surfaceSubtle,
+                                        border = BorderStroke(1.dp, borderLight),
                                         modifier = Modifier.clickable {
                                             if (isSpeaking) voiceService.stopSpeaking()
                                         }
@@ -461,7 +494,7 @@ fun App(
                                             text = if (isSpeaking) "Stop Audio" else "Clear Audio",
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.White.copy(alpha = 0.7f),
+                                            color = textSecondary,
                                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                         )
                                     }
@@ -470,7 +503,7 @@ fun App(
 
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 12.dp),
-                                color = Color.White.copy(alpha = 0.08f)
+                                color = borderLight
                             )
 
                             // Live Recognized Speech / User Transcript Area
@@ -488,7 +521,7 @@ fun App(
                                         text = if (isListening) "LISTENING..." else "YOU SAID:",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Black,
-                                        color = if (isListening) listeningRed else accentGold,
+                                        color = if (isListening) listeningRed else accentBlue,
                                         letterSpacing = 1.5.sp
                                     )
                                     Spacer(Modifier.height(6.dp))
@@ -496,7 +529,7 @@ fun App(
                                         text = if (transcript.isNotBlank()) "\"$transcript\"" else "Listening for speech...",
                                         fontSize = 20.sp,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = if (transcript.isNotBlank()) Color.White else Color.White.copy(alpha = 0.5f),
+                                        color = if (transcript.isNotBlank()) textPrimary else textMuted,
                                         lineHeight = 26.sp
                                     )
                                 }
@@ -507,7 +540,7 @@ fun App(
                                 Spacer(Modifier.height(14.dp))
                                 HorizontalDivider(
                                     modifier = Modifier.padding(vertical = 4.dp),
-                                    color = Color.White.copy(alpha = 0.06f)
+                                    color = borderLight.copy(alpha = 0.6f)
                                 )
                                 Spacer(Modifier.height(8.dp))
                                 Column(
@@ -529,8 +562,8 @@ fun App(
                                         text = assistantReply,
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.Normal,
-                                        color = Color.White.copy(alpha = 0.95f),
-                                        lineHeight = 24.sp
+                                        color = textSecondary,
+                                        lineHeight = 25.sp
                                     )
                                 }
                             }
@@ -553,7 +586,7 @@ fun App(
                                             status.contains("No speech", ignoreCase = true) ||
                                             status.contains("error", ignoreCase = true) ||
                                             status.contains("required", ignoreCase = true) -> listeningRed
-                                            else -> Color.White.copy(alpha = 0.6f)
+                                            else -> textMuted
                                         }
                                     )
                                 }
@@ -569,6 +602,16 @@ fun App(
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(16.dp),
                             singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = surfaceCard,
+                                unfocusedContainerColor = surfaceCard,
+                                focusedBorderColor = currentThemeColor,
+                                unfocusedBorderColor = borderLight,
+                                focusedTextColor = textPrimary,
+                                unfocusedTextColor = textPrimary,
+                                cursorColor = currentThemeColor
+                            ),
+                            placeholder = { Text("Type a voice command...", color = textMuted, fontSize = 14.sp) },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                             keyboardActions = KeyboardActions(onSend = { if (manualInputText.isNotBlank()) { voiceService.processVoiceCommand(manualInputText.trim()); manualInputText = "" } })
                         )
@@ -577,7 +620,7 @@ fun App(
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(if (manualInputText.isNotBlank()) currentThemeColor else Color.White.copy(alpha = 0.1f))
+                                .background(if (manualInputText.isNotBlank()) currentThemeColor else borderLight)
                                 .clickable(enabled = manualInputText.isNotBlank()) {
                                     val textToSend = manualInputText.trim()
                                     manualInputText = ""
@@ -586,11 +629,76 @@ fun App(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            SendIcon(tint = if (manualInputText.isNotBlank()) Color.Black else Color.White.copy(alpha = 0.4f), modifier = Modifier.size(20.dp))
+                            SendIcon(tint = if (manualInputText.isNotBlank()) Color.White else textMuted, modifier = Modifier.size(20.dp))
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+/**
+ * Custom Vector Logo Emblem:
+ * Combines an AI Vision Eye aperture with an inner glowing iris pupil and flanking audio soundwave pulses.
+ */
+@Composable
+fun AppLogoBadge(themeColor: Color, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(14.dp),
+        color = themeColor.copy(alpha = 0.12f),
+        border = BorderStroke(1.5.dp, themeColor.copy(alpha = 0.35f)),
+        shadowElevation = 2.dp
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize().padding(8.dp)) {
+            val w = size.width
+            val h = size.height
+
+            // Outer Vision Eye Arc
+            val eyePath = Path().apply {
+                moveTo(w * 0.08f, h * 0.5f)
+                cubicTo(w * 0.25f, h * 0.18f, w * 0.75f, h * 0.18f, w * 0.92f, h * 0.5f)
+                cubicTo(w * 0.75f, h * 0.82f, w * 0.25f, h * 0.82f, w * 0.08f, h * 0.5f)
+                close()
+            }
+            drawPath(
+                path = eyePath,
+                color = themeColor,
+                style = Stroke(width = w * 0.09f, cap = StrokeCap.Round)
+            )
+
+            // Iris Ring
+            drawCircle(
+                color = themeColor,
+                radius = w * 0.22f,
+                center = Offset(w * 0.5f, h * 0.5f),
+                style = Stroke(width = w * 0.08f)
+            )
+
+            // Pupil Center Core
+            drawCircle(
+                color = Color(0xFFF59E0B), // Golden Amber
+                radius = w * 0.12f,
+                center = Offset(w * 0.5f, h * 0.5f)
+            )
+            drawCircle(
+                color = Color.White,
+                radius = w * 0.05f,
+                center = Offset(w * 0.46f, h * 0.46f)
+            )
+
+            // Flanking Sound Pulse Nodes
+            drawCircle(
+                color = themeColor.copy(alpha = 0.7f),
+                radius = w * 0.04f,
+                center = Offset(w * 0.06f, h * 0.5f)
+            )
+            drawCircle(
+                color = themeColor.copy(alpha = 0.7f),
+                radius = w * 0.04f,
+                center = Offset(w * 0.94f, h * 0.5f)
+            )
         }
     }
 }
@@ -614,7 +722,7 @@ fun VoiceWaveVisualizer(isActive: Boolean, color: Color, modifier: Modifier = Mo
         val barCount = 13
         for (i in 0 until barCount) {
             val h = if (isActive) (sin(phase + i * 0.5f) + 1.2f) * size.height * 0.4f else size.height * 0.2f
-            drawRoundRect(color.copy(alpha = 0.5f), Offset(i * (size.width / barCount), (size.height - h) / 2f), Size(size.width / barCount * 0.6f, h), CornerRadius(4.dp.toPx()))
+            drawRoundRect(color.copy(alpha = 0.65f), Offset(i * (size.width / barCount), (size.height - h) / 2f), Size(size.width / barCount * 0.6f, h), CornerRadius(4.dp.toPx()))
         }
     }
 }

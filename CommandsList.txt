@@ -1,0 +1,166 @@
+# Blind AI Assistant - Voice Commands Reference Guide
+
+> [!TIP]
+> **Conversational Freedom**: You can speak naturally! Words like *"please"*, *"can you"*, *"could you please"*, *"hey assistant"*, *"tell me"*, *"check"*, and *"for me"* are automatically filtered out. Both ultra-short 1-word commands and full conversational sentences work identically.
+
+---
+
+## 1. Quick Daily Essentials (1-Word Triggers)
+
+| Action | Quick Commands | Conversational Examples |
+|---|---|---|
+| **Time** | `time`, `clock` | *"What time is it?"*, *"Tell me the time please"* |
+| **Date** | `date`, `today`, `day` | *"What is today's date?"*, *"What day is it today?"* |
+| **Time & Date** | `time and date`, `date and time` | *"Tell me the date and time"* |
+| **Battery** | `battery`, `charge`, `power` | *"Check my battery"*, *"How much battery is left?"* |
+| **Torch / Light On** | `torch`, `light`, `flashlight` | *"Turn on flashlight"*, *"Switch on the light please"* |
+| **Torch / Light Off** | `torch off`, `light off`, `flashlight off` | *"Turn off the flashlight"*, *"Switch off the light"* |
+| **Weather** | `weather`, `forecast` | *"What's the weather today?"*, *"How's the weather?"* |
+| **Wi-Fi / Network** | `wifi`, `internet`, `network` | *"Is Wi-Fi connected?"*, *"Check internet status"* |
+| **Bluetooth** | `bluetooth`, `check bluetooth` | *"Is Bluetooth on?"* |
+| **Storage** | `storage`, `memory` | *"How much storage do I have?"*, *"Check storage"* |
+| **Device Info** | `device info`, `about phone` | *"What phone model is this?"* |
+| **Voice Guide** | `commands`, `what can you do`, `help commands` | *"What commands can I say?"*, *"How to use"* |
+
+---
+
+## 2. Volume & Audio Controls
+
+| Action | Commands |
+|---|---|
+| **Increase Volume** | `louder`, `volume up`, `more volume`, `turn up volume` |
+| **Decrease Volume** | `quieter`, `volume down`, `less volume`, `softer`, `lower volume` |
+| **Mute Sound** | `mute`, `silence`, `quiet` |
+| **Unmute Sound** | `unmute`, `sound on`, `restore volume` |
+| **Check Volume** | `volume`, `check volume`, `volume status` |
+| **Exact Level** | `volume 50%`, `set volume to 80` |
+
+---
+
+## 3. Assistive Sight, Camera Viewfinder & Photo Vision
+
+*When triggered, a small live viewfinder popup opens at the top of the screen and displays the actual captured camera image.*
+
+| Vision Mode | Voice Commands | What It Does |
+|---|---|---|
+| **Surroundings & Scene** | `describe`, `look`, `see`, `camera`, `what's around me`, `look around` | Opens viewfinder popup, captures frame, and describes the full scene |
+| **Take Photo / Picture** | `take photo`, `take picture`, `capture image`, `photo`, `picture`, `snapshot` | Snaps a camera photograph and speaks what was captured |
+| **Obstacles & Hazards** | `obstacles`, `hazards`, `is it safe`, `watch my step`, `any danger` | Detects steps, curbs, drop-offs, and tripping hazards |
+| **Count Money / Cash** | `money`, `cash`, `currency`, `count money`, `how much money is this` | Identifies banknotes, bills, and coins with total amount |
+| **Color Detector** | `color`, `what color`, `what color is this`, `match my clothes` | Identifies clothing or item colors for outfit matching |
+| **OCR & Text Reading** | `read text`, `read label`, `read sign`, `what does this say`, `ocr` | Reads medicine boxes, street signs, food labels verbatim |
+| **Document Reader** | `read document`, `read mail`, `read letter`, `read paper`, `document` | Reads letters, receipts, and bills top-to-bottom |
+| **Item Identifier** | `what is this`, `product`, `medicine`, `what am i holding` | Identifies household goods, groceries, and medicine packaging |
+| **Object Finder** | `where is my <item>`, `find my keys`, `find my glasses` | Locates specific items using clock-face directions |
+| **Dismiss Camera** | `close camera`, `dismiss camera`, `hide camera` | Closes and dismisses the camera popup viewfinder |
+
+---
+
+## 4. Alarms, Timers & Reminders
+
+| Action | Commands |
+|---|---|
+| **Set Alarm** | `alarm 7 am`, `set alarm for 6:30`, `wake me up at 8` |
+| **Set Countdown Timer** | `timer 5 minutes`, `set timer for 10 minutes`, `timer 30 seconds` |
+| **Cancel Alarm** | `cancel alarm`, `turn off alarm`, `stop alarm` |
+| **Dismiss Ringing Alarm** | `dismiss`, `stop`, `turn off` |
+
+---
+
+## 5. Lecture & Meeting Voice Recorder
+
+| Action | Commands |
+|---|---|
+| **Start Recording** | `record lecture`, `start recording`, `record audio`, `record meeting` |
+| **Stop Recording** | `stop recording`, `finish recording`, `save recording` |
+| **Play Recording** | `play recording`, `play my lecture`, `listen to recording` |
+| **List Recordings** | `list recordings`, `my recordings` |
+
+---
+
+## 6. Location & Pedestrian Navigation
+
+| Action | Commands |
+|---|---|
+| **Current Location** | `where am i`, `location`, `my location`, `address`, `gps` |
+| **Walking Directions** | `walk to <destination>`, `navigate to <destination>`, `directions to <place>` |
+
+---
+
+## 7. Phone Calls & Caller Announcer
+
+| Action | Commands |
+|---|---|
+| **Check Caller** | `who is calling`, `who's calling`, `caller` |
+| **Answer Call** | `answer`, `pick up`, `accept` |
+| **Decline / Hang Up** | `decline`, `reject`, `hang up`, `end call` |
+| **Speakerphone On** | `speaker on`, `loudspeaker on`, `turn on speaker` |
+| **Speakerphone Off** | `speaker off`, `loudspeaker off`, `turn off speaker` |
+| **Call Contact** | `call <contact name>` (e.g. *"call Ali"*) |
+| **Call on Speaker** | `call <contact name> on speaker` |
+| **Dial Number** | `call <phone number>` / `dial <phone number>` |
+
+---
+
+## 8. WhatsApp Automation & Messaging
+
+| Action | Commands |
+|---|---|
+| **Quick Message** | `whatsapp <name>`, `message <name>` *(Assistant asks: "What message should I send?")* |
+| **Direct Message** | `whatsapp <name> saying <message>` (e.g. *"whatsapp Ali saying I am on my way"*) |
+| **WhatsApp Call** | `whatsapp call <name>`, `video call <name>` |
+| **Read Messages** | `read message`, `last message`, `messages`, `who messaged me` |
+| **Reply** | `reply`, `reply saying <message>` |
+| **SMS** | `text <name> saying <message>` / `send sms to <name>: <message>` |
+
+---
+
+## 9. YouTube Voice Navigation & Video Playback
+
+| Action | Commands |
+|---|---|
+| **Open YouTube** | `youtube`, `open youtube` |
+| **Voice Search** | `youtube <query>` (e.g. *"youtube relaxing music"*), `search youtube for <query>` |
+| **Read Results** | `read results`, `results`, `list results` |
+| **Select Video** | `option 1`, `option 2`, `first`, `second`, `play video 1` |
+| **Playback Control** | `pause`, `play`, `resume`, `stop`, `replay` |
+| **Skip Video** | `next video`, `previous video` |
+| **Skip Ads** | `skip ad`, `skip the ad`, `close ad` |
+| **Seek** | `seek forward 10 seconds`, `rewind 10 seconds` |
+| **Subtitles** | `subtitles on`, `subtitles off`, `read subtitles` |
+| **Video Title** | `title`, `what is playing`, `what are we watching` |
+
+---
+
+## 10. Emergency SOS & Safety
+
+| Action | Commands |
+|---|---|
+| **Trigger Emergency Alert** | `help`, `emergency`, `sos`, `danger`, `send sos` |
+| **Check Emergency Contact** | `emergency contact`, `who is my emergency contact` |
+| **Set Emergency Contact** | `set emergency contact <name or number>` |
+
+---
+
+## 11. Screen Reading & Accessibility Navigation
+
+| Action | Commands |
+|---|---|
+| **Read Active Screen** | `screen`, `read screen`, `read page`, `what's on my screen` |
+| **Voice Options** | `options`, `what are my options`, `list options` |
+| **Focus Next / Previous** | `next`, `next button` / `previous`, `prev` |
+| **Activate Focused Item** | `click`, `tap`, `press`, `click this` |
+| **Click by Name** | `click <button label>` (e.g. *"click submit"*, *"click search"*) |
+| **Scroll Screen** | `scroll down`, `scroll up`, `swipe down`, `swipe up` |
+| **Type by Voice** | `type <text>` / `write <text>` |
+| **System Navigation** | `back`, `go home`, `notifications` |
+
+---
+
+## 12. Cloud AI (Gemini 3.6 Flash) & Math
+
+| Action | Commands |
+|---|---|
+| **Math Calculations** | *"what is 45 plus 90"*, *"50 times 4"*, *"100 minus 35"*, *"80 divided by 4"* |
+| **General Knowledge** | Any general question: *"Why is the sky blue?"*, *"Explain gravity simply"*, *"What is the capital of France?"* |
+| **Explicit AI Query** | `ask ai <question>`, `gemini <question>` |

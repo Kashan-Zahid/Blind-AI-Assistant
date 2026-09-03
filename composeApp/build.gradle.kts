@@ -69,12 +69,8 @@ kotlin {
             implementation(libs.androidx.work.runtime.ktx)
             implementation(libs.ktor.client.okhttp)
 
-            // Firebase
-            implementation("com.google.firebase:firebase-auth:24.2.0")
-            implementation("com.google.firebase:firebase-firestore:26.5.0")
-
-            // Firebase App Check - DEBUG provider
-            implementation("com.google.firebase:firebase-appcheck-debug:19.4.0")
+            // Firebase Core (required for FirebaseApp.initializeApp)
+            implementation("com.google.firebase:firebase-common:21.0.0")
         }
 
         wasmJsMain.dependencies {

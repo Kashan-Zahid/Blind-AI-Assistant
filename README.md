@@ -1,184 +1,200 @@
 # Blind AI Assistant
 
 > **A Voice-First Assistive Android Platform for Blind & Visually Impaired Users**  
-> Built for the **Alibaba Cloud AI Hackathon Pakistan 2026**
+> Submission for the **Alibaba Cloud AI Hackathon Pakistan 2026**  
+> Package: `com.blindassistant` | Architecture: Kotlin Multiplatform (KMP) + Android Native  
+
+[![Build & Test](https://img.shields.io/badge/Unit%20Tests-93%20Passed%20(100%25)-brightgreen.svg)]()
+[![Target OS](https://img.shields.io/badge/Android-8.0%20to%2015%2B%20(API%2026--36)-blue.svg)]()
+[![Model](https://img.shields.io/badge/AI%20Model-Gemini%203.6%20Flash-orange.svg)]()
+[![Security](https://img.shields.io/badge/Secrets-Zero%20Exposed%20(local.properties)-success.svg)]()
 
 ---
 
-## 1. Problem Statement & Target Users
+## 1. Problem Statement & Impact
 
 ### The Problem
-Visually impaired individuals face steep accessibility hurdles when navigating modern touchscreen smartphones:
-- Complex nested menus and icon grids are difficult to navigate using conventional screen readers.
-- Standard cloud-only voice assistants require constant high-speed internet and suffer from noticeable roundtrip latency even for simple local device actions (like checking battery, toggling a flashlight, or setting a timer).
-- Multimodal tasks (like reading paper documents, recognizing currency, or locating lost objects) typically require separate fragmented apps.
+Visually impaired individuals face massive digital divide barriers when using modern capacitive touchscreen smartphones:
+- **Complex UI Hierarchies**: Deeply nested menus, gesture navigation, and visual icon grids are difficult to navigate using standard screen readers.
+- **High Cloud Latency & Offline Fragility**: Traditional voice assistants require continuous high-speed internet and suffer 800–2500ms roundtrip latency for simple device operations (battery check, volume, flashlight, alarms). If the user loses internet connection, the phone becomes completely inaccessible.
+- **Fragmented Accessibility Apps**: Multimodal assistive tasks (scene description, currency counting, OCR text reading, document scanning) typically force the user to download and juggle separate, non-cohesive apps.
 
-### Target Users
-- Individuals who are completely blind or have severe low vision.
-- Elderly users or those with visual motor impairments who need a 100% hands-free, voice-directed smartphone experience.
-
----
-
-## 2. Core Features & Capabilities
-
-- **Voice-First Accessibility**:
-  - Full hands-free voice interface with high-contrast UI and spoken feedback.
-  - Push-to-talk (hold) and toggle-to-talk (tap) with conversational noise filtering.
-  - Floating microphone overlay to control any app across the entire Android system.
-- **Offline-First Local Command Router**:
-  - Instant 0ms cloud latency for hardware operations: Battery level, Wi-Fi status, Bluetooth, Flashlight toggle, Volume adjustments, Time/Date, and Display Brightness.
-  - Alarms, countdown timers, and scheduled reminders without internet reliance.
-- **Google Gemini 3.6 Flash AI Integration**:
-  - General conversational reasoning, educational queries, and complex question answering powered by `gemini-3.6-flash`.
-- **Assistive Camera Vision & Viewfinder**:
-  - Automatic floating camera viewfinder popup with HUD framing brackets (`⌜ ⌝ ⌞ ⌟`).
-  - Real-time photo capture and multi-modal AI analysis for:
-    - **Surroundings & Scene Description**: Comprehensive overview of obstacles, objects, and environment.
-    - **Text & OCR Reading**: Verbatim reading of physical letters, notices, and signs.
-    - **Currency Counter**: Detection and total tally of banknotes, bills, and coins.
-    - **Color Detector**: Identifies garment and object colors for clothing matching.
-    - **Document & Mail Reader**: Reads receipts, invoices, and mail top-to-bottom.
-    - **Object Finder**: Locates specific items (keys, glasses, doors) with clock-face directional cues.
-    - **Hands-Free Dismissal**: Say *"close camera"* or tap Dismiss.
-- **Deep Android Accessibility Automation**:
-  - **WhatsApp Automation**: Send messages and initiate voice/video calls completely hands-free via `BlindAccessibilityService`.
-  - **YouTube Voice Navigation**: Voice search, video playback control, and numbered option selection (*"option 2"*, *"play video 1"*).
-  - **Hands-Free Calling & Contacts**: Dial by contact name or telephone number, automatic caller announcement, and voice call handling.
-- **Lecture & Meeting Voice Recorder**:
-  - Hands-free recording, management, and playback for visually impaired students and professionals.
-- **Emergency SOS & Location**:
-  - Quick emergency location broadcast via SMS and instant spoken coordinates.
+### The Solution: Blind AI Assistant
+A unified, voice-first Android assistant designed specifically for accessibility:
+- **0ms Local Intent Engine**: Hardware controls, battery, volume, torch, Wi-Fi, alarms, and timers execute locally and offline with zero cloud roundtrips.
+- **Multimodal AI Vision (Gemini 3.6 Flash)**: Real-time Camera2 viewfinder with automated 3A exposure stabilization, anti-blur processing, and multi-modal perception for scene description, money counting, document reading, and object finding.
+- **Deep OS Automation via AccessibilityService**: Hands-free WhatsApp messaging/voice note playback, YouTube voice control with automated search correction filtering, and hands-free phone calling.
 
 ---
 
-## 3. Architecture & Technology Stack
+## 2. Technical Architecture & System Design
 
 ```
-                               ┌────────────────────────┐
-                               │     User Voice Input   │
-                               │  (SpeechRecognizer /   │
-                               │   Floating Mic Window) │
-                               └───────────┬────────────┘
-                                           │
-                                           ▼
-                             ┌───────────────────────────┐
-                             │     CommandProcessor      │
-                             │ (Conversational Filtering │
-                             │  & Local Intent Routing)  │
-                             └─────┬───────────────┬─────┘
-                                   │               │
-            [Local Device Action]  │               │ [General AI / Vision Query]
-                                   ▼               ▼
-                       ┌────────────────┐    ┌─────────────────────────────────┐
-                       │DeviceController│    │            AiClient             │
-                       │- Battery, WiFi │    │ (Google Gemini Developer API:   │
-                       │- Alarms, Audio │    │  gemini-3.6-flash endpoint)     │
-                       │- Contacts/Calls│    └────────────────┬────────────────┘
-                       │- Accessibility │                     │
-                       └────────────────┘                     ▼
-                                             ┌─────────────────────────────────┐
-                                             │       CameraVisionManager       │
-                                             │ (Camera2 Frame Capture + Popup) │
-                                             └─────────────────────────────────┘
+                                ┌────────────────────────┐
+                                │     User Voice Input   │
+                                │  (SpeechRecognizer /   │
+                                │   Floating Mic Window) │
+                                └───────────┬────────────┘
+                                            │
+                                            ▼
+                                ┌───────────────────────────┐
+                                │     CommandProcessor      │
+                                │ (Conversational Filtering │
+                                │  & Local Intent Routing)  │
+                                └─────┬───────────────┬─────┘
+                                      │               │
+               [Local Device Action]  │               │ [General AI / Vision Query]
+               (0ms Offline Latency)  ▼               ▼
+                        ┌────────────────┐    ┌─────────────────────────────────┐
+                        │DeviceController│    │            AiClient             │
+                        │- Battery, WiFi │    │ (Google Gemini Developer API:   │
+                        │- Alarms, Audio │    │  gemini-3.6-flash endpoint)     │
+                        │- Contacts/Calls│    └────────────────┬────────────────┘
+                        │- Accessibility │                     │
+                        └────────────────┘                     ▼
+                                              ┌─────────────────────────────────┐
+                                              │       CameraVisionManager       │
+                                              │ - 3A Auto-Exposure Warmup (5-fr)│
+                                              │ - HD 1280x720 / 1080p JPEG      │
+                                              │ - Live Floating Viewfinder Popup│
+                                              └─────────────────────────────────┘
 ```
 
-- **Framework**: Kotlin Multiplatform (KMP) & Jetpack Compose Multiplatform (Compose Material3).
-- **Audio Engine**: Android `SpeechRecognizer` with customized silence-duration windows + Android `TextToSpeech` with speech queue management.
-- **OS Automation**: Custom Android `AccessibilityService` (`BlindAccessibilityService`) providing window content inspection, node traversal, and click/scroll gesture synthesis.
-- **Camera Pipeline**: Android Camera2 API (`ImageReader`) with Base64 JPEG frame delivery and Compose high-resolution bitmap rendering.
-- **Cloud AI Provider**: Google Gemini Developer API (`gemini-3.6-flash`).
+### Key Engineering Subsystems:
+1. **Hybrid Local / Cloud Intent Router (`CommandProcessor.kt`)**:
+   - Strips polite conversational prefixes (*"can you please"*, *"could you tell me"*, *"hey assistant"*) and suffixes (*"please"*, *"for me"*, *"right now"*) using regex-free streaming string normalization.
+   - Evaluates offline intents first (battery, flashlight, volume, Wi-Fi, time/date, alarms, app launching, recorder).
+   - Only falls back to **Gemini 3.6 Flash** when complex natural language reasoning or visual perception is strictly required.
+
+2. **Computer Vision & Camera Pipeline (`CameraVisionManager.kt`)**:
+   - **3A Convergence Engine**: Mobile CMOS sensors power on with unmetered exposure gain (causing blown-out white glare) and default lens position (causing blur). Our pipeline streams 5 warm-up repeating requests allowing hardware Auto-Exposure (AE), Auto-White-Balance (AWB), and Auto-Focus (AF) to lock before taking the snapshot.
+   - **Hardware Noise Reduction & Edge Optimization**: Configures `NOISE_REDUCTION_MODE_HIGH_QUALITY`, `EDGE_MODE_HIGH_QUALITY`, and `JPEG_QUALITY 95`.
+   - **Dynamic HD Resolution**: Dynamically discovers sensor stream configuration maps, selecting 1280x720 / 1080p HD instead of low-res 640x480.
+   - **Compose Viewfinder HUD**: Floating viewfinder popup with framing brackets (`⌜ ⌝ ⌞ ⌟`) decodes the actual JPEG frame via multiplatform `decodeBase64ToImageBitmap()` in real-time.
+
+3. **WhatsApp Deep Automation Engine (`BlindAccessibilityService.kt`)**:
+   - **Notification Parser**: Inspects `Notification.EXTRA_TEXT_LINES` and `Notification.EXTRA_MESSAGES` to extract actual individual message lines instead of speaking generic counter summaries like *"2 new messages from Ali"*.
+   - **Voice Note Detection & Auto-Playback**: Detects incoming voice messages (`🎙️ Voice message` / `Audio`), announces them, and automatically opens WhatsApp to trigger the play button when the user says *"play it"* or *"play voice note"*.
+   - **Hands-Free Messaging**: Automates the complete send sequence (resolving conversation node, typing text, verifying delivery).
+
+4. **YouTube Voice Navigation & "Did you mean" Noise Filtering**:
+   - Filters out non-video UI elements, YouTube Shorts carousels, and search correction banners (*"Did you mean"*, *"Showing results for"*, *"Search instead for"*) across 3 distinct validation layers (`isUiNoiseOrStatusTitle`, `cleanYouTubeVideoTitle`, `isNonVideoCandidate`).
+   - Options 1, 2, and 3 presented to the blind user are guaranteed to be playable full-length videos.
 
 ---
 
-## 4. Google Gemini Configuration & Security
+## 3. Cloud AI & Backend Architecture
 
-The application connects directly to the Google Gemini Developer API:
-- **Provider**: Google Gemini Developer API
+### AI Provider: Google Gemini Developer API
+The application uses the Google Gemini Developer API directly without middle-tier wrappers:
 - **Model**: `gemini-3.6-flash`
 - **Endpoint**: `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent`
-- **Request Header**: `x-goog-api-key: <API_KEY>`
+- **Protocol**: Direct REST API call via Ktor `HttpClient` (OkHttp engine on Android) with Base64 inline JPEG payload for vision queries.
+- **Unified Provider**: Both text reasoning (*"ask"*) and multimodal vision analysis (*"askWithVision"*) use this exact same endpoint and model.
+
+### Firebase Integration Scope
+- **Firebase Core**: Initialized on Android startup via `FirebaseApp.initializeApp(this)` for Android platform services.
+- **Dormant / Excluded Services**: No Firebase Authentication, Cloud Firestore, App Check, Cloud Messaging (FCM), or Cloud Functions are used. All user preferences, personal memories, alarm data, and audio recordings are stored locally and privately on-device without cloud database lock-in.
 
 ### Zero-Secret Public Repository Guarantee
-No production API keys, secrets, or private credentials are stored in this Git repository:
-- The API key is injected at compile-time via `BuildConfig.GEMINI_API_KEY`.
-- Developers configure their personal key in `local.properties` (which is git-ignored).
-- If no key is provided, the project still compiles cleanly and local device commands remain 100% functional offline.
-
-To configure your Gemini API key locally:
-1. Open or create `local.properties` in the project root.
-2. Add your key:
-   ```properties
-   GEMINI_API_KEY=AIzaSyYourActualKeyHere
-   ```
+This repository contains **zero exposed credentials or API keys**:
+- The API key is injected at build time into `BuildConfig.GEMINI_API_KEY`.
+- Developers supply their personal key inside `local.properties` (which is strictly git-ignored):
+  ```properties
+  GEMINI_API_KEY=AIzaSyYourKeyHere
+  ```
+- `composeApp/google-services.json` is strictly ignored by `.gitignore` and not tracked by Git.
+- If built without an API key, the project still compiles 100% cleanly, all 93 unit tests pass, and all offline local commands remain fully operational.
 
 ---
 
-## 5. Building and Running
+## 4. Technical Evaluation Quickstart (For Judges)
 
 ### Prerequisites
-- **Android Studio** Ladybug (2024.2+) or later
-- **JDK 17**
-- **Android SDK**: Compile SDK 36, Minimum SDK 26 (Android 8.0 through Android 15+)
-- Physical Android device with microphone and camera (recommended for full hardware testing)
+- **JDK 17** (`openjdk 17`)
+- **Android SDK** (API 26 to API 36)
 
-### Build Steps
+### 1. Run the Complete Test Suite
+```bash
+./gradlew test
+```
+**Results:** **93 unit tests execute and pass (100% success rate)** across 5 test suites:
+- `CommandProcessorTest`: 48 tests (intent routing, conversational normalization, quick triggers)
+- `YouTubeVideoSelectionTest`: 17 tests (voice search, playback control, "Did you mean" rejection)
+- `WhatsAppCallFlowTest`: 13 tests (contact disambiguation, message dispatch, call handling)
+- `AiClientTest`: 10 tests (payload construction, API key injection, error handling)
+- `LiveTranscriptTest`: 5 tests (state emissions, transcript flow)
 
-1. **Clone Repository**:
-   ```bash
-   git clone https://github.com/Kashan-Zahid/Blind-Ai-Assistnat.git
-   cd Blind-Ai-Assistnat
-   ```
+### 2. Build the Debug APK
+```bash
+./gradlew assembleDebug
+```
+- **Output Artifact**: `composeApp/build/outputs/apk/debug/composeApp-debug.apk`
+- **Size**: `~20 MB`
 
-2. **Configure API Key**:
-   Add `GEMINI_API_KEY=your_key` to `local.properties`.
-
-3. **Run Unit Tests**:
-   ```bash
-   ./gradlew test
-   ```
-   *(92 unit tests covering command routing, conversational normalization, YouTube selection, WhatsApp flows, and AI client handling).*
-
-4. **Assemble Debug APK**:
-   ```bash
-   ./gradlew assembleDebug
-   ```
-   Output APK: `composeApp/build/outputs/apk/debug/composeApp-debug.apk`
-
-5. **Install on Connected Android Device**:
-   ```bash
-   adb install -r composeApp/build/outputs/apk/debug/composeApp-debug.apk
-   adb shell am start -n com.blindassistant/.MainActivity
-   ```
+### 3. Install on Connected Android Device
+```bash
+adb install -r composeApp/build/outputs/apk/debug/composeApp-debug.apk
+adb shell am start -n com.blindassistant/.MainActivity
+```
 
 ---
 
-## 6. Hackathon Live Demo Guide (2–4 Minutes)
+## 5. Quick Voice Commands Reference Cheatsheet
 
-Follow this sequence for an impactful live demonstration:
-
-| Step | Action / Spoken Voice Command | Expected Live Response | Highlight |
-|---|---|---|---|
-| **1. Wake & Speak** | Tap center button or hold to speak: *"Hello"* | Assistant replies: *"Hello! How can I help you today?"* with animated wave visualizer. | Seamless accessibility gesture & speech recognition. |
-| **2. Local Command** | Speak: *"Battery"* or *"Check battery"* | Instant spoken response (e.g., *"Battery is at 84 percent"*). | **0ms cloud latency** local intent routing. |
-| **3. Device Control** | Speak: *"Flashlight on"*, then *"Flashlight off"* | Hardware torch activates and deactivates immediately with spoken confirmation. | Direct hardware control. |
-| **4. Cloud AI (Gemini)** | Speak: *"Why is the sky blue?"* or *"Explain gravity simply"* | Gemini 3.6 Flash responds with concise, conversational explanation. | Cloud reasoning without markdown clutter. |
-| **5. Camera Vision** | Speak: *"Describe"* or *"Look around me"* | Small viewfinder popup appears with HUD brackets, captures camera frame, displays actual photo, and speaks scene details. | Multimodal assistive vision. |
-| **6. Dismiss Camera** | Speak: *"Close camera"* | Camera popup closes smoothly with voice confirmation. | Hands-free dismiss control. |
-| **7. YouTube Navigation** | Speak: *"Search YouTube for relaxing piano"* | Launches YouTube, searches, reads results, and allows picking: *"Option 1"*. | Deep OS automation via `AccessibilityService`. |
-| **8. WhatsApp Automation** | Speak: *"Send WhatsApp to [Contact] saying I am running late"* | Automatically opens chat, enters text, and awaits confirmation. | Real-world daily independence. |
-| **9. Lecture Recording** | Speak: *"Record lecture"*, then *"Stop recording"* | Begins recording audio file to internal storage and stops with confirmation. | Practical utility for students/professionals. |
+| Category | Quick Commands (1-Word / Conversational) | Action / System Response |
+|---|---|---|
+| **Daily Essentials** | `time`, `date`, `battery`, `wifi`, `weather` | Instant spoken response (0ms cloud latency) |
+| **Hardware Torch** | `torch` *(on)*, `torch off` | Direct hardware camera flash toggle |
+| **Volume Control** | `louder`, `quieter`, `mute`, `unmute`, `volume 50%` | Adjusts system audio streams |
+| **Surroundings** | `describe`, `look`, `camera`, `what's around me` | Opens HD viewfinder, stabilizes 3A, speaks scene |
+| **Actual Photo** | `take photo`, `take picture`, `snapshot` | Snaps photograph and speaks captured objects |
+| **Cash / Money** | `money`, `cash`, `count money` | Identifies banknotes, currency denominations, and totals |
+| **Text / OCR** | `read text`, `read sign`, `ocr` | Reads medicine bottles, packaging, and street signs |
+| **Mail / Documents**| `read document`, `read mail`, `document` | Reads letters, receipts, and printed pages |
+| **Dismiss Camera** | `close camera`, `dismiss camera` | Hands-free closing of floating viewfinder popup |
+| **Read Message** | `what is the message`, `read message`, `last message` | Speaks out incoming WhatsApp message text |
+| **Play Voice Note** | `play it`, `play voice note`, `play message` | Opens WhatsApp and plays received voice message |
+| **Send WhatsApp** | `whatsapp [name] saying [message]` | Hands-free messaging via AccessibilityService |
+| **YouTube Search** | `youtube [query]` *(e.g. `youtube relaxing music`)* | Opens YouTube, executes search, lists clean videos |
+| **Select Video** | `option 1`, `option 2`, `first`, `second` | Plays selected video (filters out "Did you mean") |
+| **Media Playback** | `pause`, `play`, `skip ad`, `next video` | Controls YouTube video playback |
+| **Phone Calls** | `call [name]`, `call [number]`, `speaker on` | Hands-free telephony and speakerphone control |
+| **Alarms & Timers** | `alarm 7 am`, `timer 5 minutes`, `cancel alarm` | Hardware clock management |
+| **Lecture Recorder**| `record lecture`, `stop recording`, `play recording` | Internal audio recorder for students & meetings |
+| **Emergency SOS** | `sos`, `emergency`, `help` | Sends GPS location broadcast via SMS |
+| **Gemini 3.6 Flash** | *"Why is the sky blue?"*, *"What is 50 times 4"* | Cloud generative reasoning without markdown noise |
 
 ---
 
-## 7. Known Limitations & Permissions
+## 6. Live Demonstration Sequence (2–4 Minutes)
 
-- **Accessibility Service**: Deep app automation (WhatsApp, YouTube interaction) requires enabling the *Blind AI Assistant Screen Reader & Automation* service in Android Settings > Accessibility.
-- **Telephony & SMS**: Direct cellular phone calls and SMS SOS require an active SIM card.
-- **Android Version**: Optimized for Android 10 (API 29) through Android 15 (API 35/36).
+Judges can execute this exact demo sequence to evaluate responsiveness, multimodal vision, and deep system automation:
+
+| Step | Voice Command | System Behavior & Technical Execution |
+|---|---|---|
+| **1. Wake & Speak** | Tap mic or hold: *"Hello"* | Speaks welcome response with animated soundwave visualizer. |
+| **2. Instant Offline Routing** | *"Battery"* | Spoken battery percentage at **0ms cloud latency**. |
+| **3. Hardware Control** | *"Torch"*, then *"Torch off"* | Camera LED toggles instantly via `CameraManager.setTorchMode()`. |
+| **4. Multimodal Vision** | *"Describe"* or *"Take photo"* | Floating viewfinder popup displays live with HUD brackets, performs 5-frame 3A stabilization, and Gemini 3.6 Flash describes the environment. |
+| **5. Hands-Free Dismiss** | *"Close camera"* | Viewfinder popup dismisses cleanly. |
+| **6. YouTube Voice Control** | *"YouTube coke studio"* | Launches YouTube, parses results with "Did you mean" filter, and announces: *"Option 1: [Song]. Say an option number to play it."* |
+| **7. Video Selection** | *"Option 1"* | Automatically navigates to and plays the selected video. |
+| **8. WhatsApp Message** | *"Send WhatsApp to [Name] saying I am almost there"* | Accessibility service opens WhatsApp, navigates to contact, types message, and sends. |
+| **9. General Intelligence** | *"Explain gravity simply"* | Gemini 3.6 Flash provides conversational explanation. |
 
 ---
 
-## 8. License
+## 7. Permissions & Accessibility Configuration
+
+To enable the full accessibility automation features:
+1. **Accessibility Service**: Open **Android Settings > Accessibility** and enable **Blind AI Assistant Screen Reader & Automation**.
+2. **Microphone & Camera**: Required for voice input and assistive camera vision.
+3. **Contacts & Phone (Optional)**: Required for hands-free voice dialing by contact name.
+
+---
+
+## 8. License & Acknowledgements
 
 Developed for the **Alibaba Cloud AI Hackathon Pakistan 2026**.  
 Licensed under the [Apache 2.0 License](LICENSE).
