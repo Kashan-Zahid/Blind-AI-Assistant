@@ -84,7 +84,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.example.blindaassistant"
+    namespace = "com.blindassistant"
     compileSdk = 36
 
     val localProps = Properties().apply {
@@ -96,7 +96,7 @@ android {
         ?: ""
 
     defaultConfig {
-        applicationId = "com.example.blindaassistant"
+        applicationId = "com.blindassistant"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

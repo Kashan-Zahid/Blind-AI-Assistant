@@ -147,7 +147,7 @@ To configure your Gemini API key locally:
 5. **Install on Connected Android Device**:
    ```bash
    adb install -r composeApp/build/outputs/apk/debug/composeApp-debug.apk
-   adb shell am start -n com.example.blindaassistant/.MainActivity
+   adb shell am start -n com.blindassistant/.MainActivity
    ```
 
 ---

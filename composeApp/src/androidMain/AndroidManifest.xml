@@ -96,8 +96,8 @@
             android:name=".AlarmReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.example.blindaassistant.ALARM_TRIGGER" />
-                <action android:name="com.example.blindaassistant.DISMISS_ALARM" />
+                <action android:name="com.blindassistant.ALARM_TRIGGER" />
+                <action android:name="com.blindassistant.DISMISS_ALARM" />
             </intent-filter>
         </receiver>
 
