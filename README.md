@@ -647,11 +647,9 @@ Build:
 
 ## 15. License & Acknowledgements
 
-Developed for the **Alibaba Cloud AI Hackathon Pakistan 2026**.
-
-Licensed under the **Apache License 2.0**.
-
-See [`LICENSE`](LICENSE) for the complete license text.
+Developed for the Alibaba Cloud AI Hackathon Pakistan 2026.
+Licensed under the MIT License.
+See the LICENSE file for the complete license text.
 
 ---
 
