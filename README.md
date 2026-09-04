@@ -309,8 +309,6 @@ local.properties
 *.env
 *.keystore
 *.jks
-google-services.json
-composeApp/google-services.json
 ```
 
 The public repository does not contain production API credentials.
@@ -329,11 +327,17 @@ Developers should:
 
 ### Prerequisites
 
+Before building the project, install:
+
+* Android Studio
 * JDK 17
 * Android SDK
-* Android API 26 or higher
+* Android SDK Platform/API 26 or higher
+* Android SDK Build-Tools
 * A physical Android device or emulator
 * Internet connection for Gemini-powered functionality
+
+> **Note:** The Android SDK is required only for developers building the project from source. Normal users installing a pre-built APK do not need Android Studio, Gradle, or the Android SDK.
 
 ### Clone the Repository
 
@@ -342,9 +346,33 @@ git clone https://github.com/Kashan-Zahid/Blind-AI-Assistant.git
 cd Blind-AI-Assistant
 ```
 
-### Configure Gemini
+### Open the Project
 
-Create:
+The recommended method is to open the project in **Android Studio**.
+
+Android Studio will detect the project's Gradle configuration and use the Android SDK configured on the developer's machine.
+
+If Gradle cannot locate the Android SDK, configure the SDK through Android Studio's SDK settings or define the SDK location using the standard Android `local.properties` file.
+
+**Do not copy another developer's SDK path.** SDK paths are machine-specific.
+
+For example, a developer may have:
+
+```properties
+sdk.dir=/home/username/Android/Sdk
+```
+
+while another developer may have:
+
+```properties
+sdk.dir=C:\\Users\\username\\AppData\\Local\\Android\\Sdk
+```
+
+`local.properties` is intentionally excluded from Git because it can contain machine-specific configuration and project secrets.
+
+### Configure Gemini API Key
+
+Create or edit:
 
 ```text
 local.properties
@@ -356,7 +384,14 @@ Add:
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 ```
 
-Do not commit this file.
+If your Android SDK is not automatically detected, the same file may also contain your machine-specific SDK path:
+
+```properties
+sdk.dir=/path/to/your/Android/Sdk
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+**Never commit `local.properties` to Git.**
 
 ### Run Tests
 
@@ -372,8 +407,6 @@ Current project validation:
 0 failed
 100% success
 ```
-
-The test suite covers command processing, YouTube selection, WhatsApp/call workflows, AI client behavior, and live transcript functionality.
 
 ### Build the Debug APK
 
@@ -406,6 +439,18 @@ Launch:
 ```bash
 adb shell am start -n com.blindassistant/.MainActivity
 ```
+
+### For End Users
+
+If a pre-built APK is provided, end users do **not** need:
+
+* Android Studio
+* JDK
+* Gradle
+* Android SDK
+* Source-code configuration
+
+They only need a compatible Android device and the APK.
 
 ---
 

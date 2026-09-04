@@ -11,8 +11,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 
-import com.google.firebase.FirebaseApp
-
 class MainActivity : ComponentActivity() {
 
     private lateinit var voiceService: AndroidVoiceService
@@ -35,9 +33,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Initialize Firebase
-        FirebaseApp.initializeApp(this)
 
         val prefManager = PreferenceManager(applicationContext)
 

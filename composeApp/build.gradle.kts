@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
-    id("com.google.gms.google-services")
 }
 
 tasks.register("prepareKotlinBuildScriptModel") {}
@@ -68,9 +67,6 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.ktx)
             implementation(libs.androidx.work.runtime.ktx)
             implementation(libs.ktor.client.okhttp)
-
-            // Firebase Core (required for FirebaseApp.initializeApp)
-            implementation("com.google.firebase:firebase-common:21.0.0")
         }
 
         wasmJsMain.dependencies {
