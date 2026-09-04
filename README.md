@@ -1,378 +1,346 @@
 # Blind AI Assistant
 
 > **A Voice-First Assistive Android Platform for Blind & Visually Impaired Users**
-> Submission for the **Alibaba Cloud AI Hackathon Pakistan 2026**
-> Package: `com.blindassistant` | Architecture: Kotlin Multiplatform (KMP) + Android Native
 
-[![Build & Test](https://img.shields.io/badge/Unit%20Tests-93%20Passed%20\(100%25\)-brightgreen.svg)]()
-[![Target OS](https://img.shields.io/badge/Android-8.0%20to%2015%2B%20\(API%2026--36\)-blue.svg)]()
-[![Model](https://img.shields.io/badge/AI%20Model-Gemini%203.6%20Flash-orange.svg)]()
-[![Security](https://img.shields.io/badge/Secrets-Zero%20Exposed%20\(local.properties\)-success.svg)]()
+**Alibaba Cloud AI Hackathon Pakistan 2026**
 
----
+**Package:** `com.blindassistant`
+**Platform:** Android
+**Minimum Android:** 8.0 / API 26
+**Architecture:** Kotlin Multiplatform (KMP) + Android Native
+**AI:** Google Gemini Developer API
+**Interaction:** Voice + Text-to-Speech + AccessibilityService
 
-## 1. Problem Statement & Impact
-
-### The Problem
-
-Visually impaired users can face significant accessibility barriers when interacting with modern touchscreen smartphones:
-
-* **Complex UI hierarchies:** Deep menus, gesture-based navigation, and visual interfaces can be difficult to operate without sight.
-* **Cloud dependency:** Basic device operations should not require an internet connection or a remote AI service.
-* **Fragmented accessibility tools:** Tasks such as scene description, text reading, communication, and media control are often spread across multiple applications.
-* **Voice interaction limitations:** General-purpose assistants are not always designed around a voice-first workflow for users who cannot rely on visual feedback.
-
-### The Solution
-
-**Blind AI Assistant** is a voice-first Android accessibility platform that combines local device automation, Android AccessibilityService capabilities, camera-based assistance, and Gemini-powered AI.
-
-The system follows a **local-first architecture**:
-
-* Device operations are processed locally whenever possible.
-* Cloud AI is used for tasks requiring general reasoning or multimodal perception.
-* Voice input and spoken responses provide the primary interaction method.
-* AccessibilityService enables hands-free interaction with supported applications.
-
-### Core Capabilities
-
-* Offline device commands
-* Battery and Wi-Fi information
-* Flashlight and volume control
-* Alarms and timers
-* Voice-based phone calling
-* WhatsApp automation
-* YouTube voice search and playback control
-* Camera-based scene description
-* Currency recognition
-* Text and document reading
-* Object identification
-* Gemini-powered general questions
-* English and Roman Urdu voice commands
-* Accessibility-focused voice interaction
+[![Tests](https://img.shields.io/badge/Tests-93%20Passed%20%7C%20100%25-brightgreen.svg)]()
+[![Android](https://img.shields.io/badge/Android-8.0%2B%20%7C%20API%2026--36-blue.svg)]()
+[![Architecture](https://img.shields.io/badge/Architecture-KMP%20%2B%20Android%20Native-purple.svg)]()
+[![AI](https://img.shields.io/badge/AI-Google%20Gemini-orange.svg)]()
+[![Security](https://img.shields.io/badge/Secrets-local.properties-success.svg)]()
 
 ---
 
-## 2. Technical Architecture & System Design
+## 1. Overview
+
+**Blind AI Assistant** is a voice-first Android accessibility platform designed to help blind and visually impaired users interact with smartphones without depending primarily on visual interfaces.
+
+It combines:
+
+* 🎤 Speech recognition
+* 🔊 Text-to-Speech
+* 🧠 Local command processing
+* 🤖 Gemini AI
+* 📷 Camera-based vision
+* ♿ Android AccessibilityService
+* 📱 Device controls
+* 💬 WhatsApp automation
+* ▶️ YouTube voice navigation
+* 🌐 English + Roman Urdu commands
+
+### Problem
+
+Modern smartphones rely heavily on visual interfaces, complex menus, gestures, and separate applications. Basic device operations may also unnecessarily depend on cloud services.
+
+### Solution
+
+Blind AI Assistant provides a unified voice-first workflow:
 
 ```text
-                         ┌─────────────────────────┐
-                         │      User Voice Input   │
-                         │  SpeechRecognizer / Mic │
-                         └────────────┬────────────┘
-                                      │
-                                      ▼
-                         ┌─────────────────────────┐
-                         │    CommandProcessor     │
-                         │                         │
-                         │ Intent Detection        │
-                         │ Command Normalization   │
-                         │ Local / Cloud Routing   │
-                         └────────────┬────────────┘
-                                      │
-                    ┌─────────────────┴─────────────────┐
-                    │                                   │
-                    ▼                                   ▼
-          ┌────────────────────┐             ┌─────────────────────┐
-          │ Local Device Layer │             │     Gemini AI       │
-          │                    │             │                     │
-          │ Battery            │             │ General Questions  │
-          │ Wi-Fi              │             │ Vision Analysis    │
-          │ Flashlight         │             │ Natural Language   │
-          │ Volume             │             └──────────┬──────────┘
-          │ Alarms / Timers    │                        │
-          │ Calling            │                        ▼
-          └─────────┬──────────┘             ┌─────────────────────┐
-                    │                        │ CameraVisionManager │
-                    │                        │                     │
-                    │                        │ Camera2             │
-                    │                        │ Image Capture       │
-                    │                        │ Vision Processing   │
-                    │                        └─────────────────────┘
-                    │
-                    ▼
-          ┌──────────────────────┐
-          │ Accessibility Layer  │
-          │                      │
-          │ WhatsApp Automation  │
-          │ YouTube Automation   │
-          │ UI Interaction       │
-          └──────────────────────┘
+Voice Input
+    ↓
+CommandProcessor
+    ↓
+Local Command ─────→ Android Device
+    │
+    └───────────────→ Gemini AI
+                           ↓
+                    Camera / AI Analysis
+    ↓
+Spoken Response
 ```
+
+The system uses **local processing whenever possible** and Gemini only when cloud AI is useful or required.
 
 ---
 
-## 3. Key Engineering Subsystems
+# 2. Key Features
 
-### 3.1 Command Processing
+### 📱 Device Assistance
 
-**File:** `CommandProcessor.kt`
-
-The command processor provides the main routing layer between voice input and application functionality.
-
-It handles:
-
-* Local device commands
-* Natural-language normalization
-* Conversational prefixes and suffixes
-* English commands
-* Roman Urdu commands
-* Quick voice triggers
-* Cloud AI fallback
-
-Examples:
-
-```text
-"hey assistant, can you tell me my battery?"
-                    ↓
-"battery"
-
-"please turn on the torch"
-                    ↓
-"torch"
-
-"could you make the volume louder?"
-                    ↓
-"louder"
-```
-
-Supported local commands are processed without requiring Gemini.
-
----
-
-### 3.2 Device Control
-
-**File:** `DeviceController.kt`
-
-The device control layer provides direct interaction with Android system functionality.
-
-Supported areas include:
-
-* Battery information
-* Wi-Fi state
-* Flashlight
-* Volume
-* Date and time
+* Battery status
+* Wi-Fi status
+* Flashlight control
+* Volume control
+* Date & time
 * Alarms
 * Timers
 * Application launching
-* Media-related controls
+* Supported media controls
 
-Simple device operations remain independent from network availability.
+### 📞 Communication
+
+* Voice-based calling
+* Contact lookup
+* WhatsApp messaging
+* Supported WhatsApp UI automation
+* Message/notification reading
+* Supported voice-message playback
+
+### 📷 Visual Assistance
+
+* Scene description
+* Object identification
+* Currency recognition
+* Text/OCR reading
+* Document reading
+* Camera-based questions
+* Gemini multimodal analysis
+
+### ▶️ YouTube
+
+* Voice search
+* Result selection
+* Shorts filtering
+* Search-result cleanup
+* Playback control
+* Voice-driven navigation
+
+### 🤖 AI
+
+* General questions
+* Natural-language reasoning
+* Explanations
+* Image understanding
+* Scene interpretation
+* Text interpretation
+* Multimodal assistance
+
+### 🌐 Languages
+
+* English
+* Roman Urdu
 
 ---
 
-### 3.3 Computer Vision & Camera Pipeline
-
-**File:** `CameraVisionManager.kt`
-
-The camera subsystem provides visual assistance through Android Camera2 APIs.
-
-The pipeline supports:
-
-* Camera2 integration
-* Automatic exposure
-* Automatic white balance
-* Automatic focus
-* Camera warm-up frames
-* JPEG capture
-* HD stream configuration
-* Live floating viewfinder
-* Gemini multimodal analysis
-
-The camera is stabilized before image capture to improve the quality of visual analysis.
-
-Example commands:
+# 3. Technical Architecture
 
 ```text
-"describe around me"
-"what is in front of me?"
-"read this text"
-"count this money"
-"find my object"
+                    ┌─────────────────────┐
+                    │   Voice / Mic Input │
+                    │  Android Speech API │
+                    └──────────┬──────────┘
+                               ↓
+                    ┌─────────────────────┐
+                    │  CommandProcessor   │
+                    │                     │
+                    │ Intent Detection    │
+                    │ Normalization       │
+                    │ Language Handling   │
+                    │ Local/Cloud Routing │
+                    └──────────┬──────────┘
+                               │
+                 ┌─────────────┴─────────────┐
+                 ↓                           ↓
+       ┌──────────────────┐        ┌──────────────────┐
+       │  Local Device    │        │   Gemini AI      │
+       │     Layer        │        │                  │
+       │                  │        │ General AI       │
+       │ Battery          │        │ Reasoning        │
+       │ Wi-Fi            │        │ Vision           │
+       │ Flashlight       │        │ Text Analysis    │
+       │ Volume           │        │ Multimodal AI    │
+       │ Alarms/Timers    │        └────────┬─────────┘
+       │ Calling          │                 ↓
+       └────────┬─────────┘        ┌──────────────────┐
+                │                  │ Camera Vision    │
+                │                  │ Camera2 + Images │
+                │                  └──────────────────┘
+                ↓
+       ┌──────────────────────┐
+       │ Accessibility Layer  │
+       │                      │
+       │ WhatsApp             │
+       │ YouTube              │
+       │ UI Navigation        │
+       └──────────────────────┘
 ```
 
 ---
 
-### 3.4 WhatsApp Accessibility Automation
+# 4. Core Subsystems
 
-**File:** `BlindAccessibilityService.kt`
+## Command Processing
 
-The application uses Android `AccessibilityService` to provide hands-free interaction with supported WhatsApp workflows.
+**`CommandProcessor.kt`**
 
-Capabilities include:
+Handles:
 
-* Opening WhatsApp
-* Navigating supported conversation interfaces
-* Reading available notification message content
-* Sending text messages
-* Detecting incoming voice messages
-* Triggering supported voice-message playback
-* Voice-driven interaction
+* Intent detection
+* Command normalization
+* English commands
+* Roman Urdu commands
+* Conversational prefixes/suffixes
+* Quick triggers
+* Local/cloud routing
+* Gemini fallback
 
 Example:
 
 ```text
-"send WhatsApp to Ali saying I am almost there"
+"hey assistant, can you tell me my battery?"
+                         ↓
+                      "battery"
 ```
 
-The accessibility service performs the supported interaction sequence without requiring the user to visually navigate the interface.
+```text
+"please turn on the torch"
+                         ↓
+                       "torch"
+```
 
 ---
 
-### 3.5 YouTube Voice Navigation
+## Device Control
 
-The YouTube integration is designed around voice-first search and selection.
+**`DeviceController.kt`**
 
-The system filters irrelevant search-result elements such as:
+Provides local Android operations including:
 
-* YouTube Shorts
-* Search correction banners
+* Battery
+* Wi-Fi
+* Flashlight
+* Volume
+* Date/time
+* Alarms
+* Timers
+* App launching
+* Media controls
+* Supported phone actions
+
+Basic operations do not require Gemini.
+
+---
+
+## Camera & Vision
+
+**`CameraVisionManager.kt`**
+
+Uses Android Camera2 and supports:
+
+* Automatic exposure
+* Auto white balance
+* Auto focus
+* Camera warm-up
+* JPEG capture
+* HD streams
+* Live/floating viewfinder
+* Gemini image analysis
+
+Example:
+
+```text
+"Describe around me"
+"What is in front of me?"
+"Read this text"
+"Count this money"
+"Find my object"
+```
+
+---
+
+## WhatsApp Automation
+
+**`BlindAccessibilityService.kt`**
+
+Uses Android AccessibilityService for supported WhatsApp workflows:
+
+* Open WhatsApp
+* Navigate supported conversations
+* Contact-based messaging
+* Send text messages
+* Read available notification/message content
+* Supported voice-message workflows
+
+Example:
+
+```text
+"Send WhatsApp to Ali saying I am almost there"
+```
+
+> WhatsApp automation depends on its current UI/accessibility structure and may be affected by future app updates.
+
+---
+
+## YouTube Automation
+
+The accessibility layer supports voice-driven YouTube interaction.
+
+It filters elements such as:
+
+* Shorts
 * `"Did you mean"` results
 * `"Showing results for"` messages
-* Non-video UI elements
+* Other irrelevant/non-video UI
 
-The user can select results using:
-
-```text
-"option 1"
-"option 2"
-"first"
-"second"
-```
-
-Playback commands include:
+Selection:
 
 ```text
-"play"
-"pause"
-"next video"
-"skip ad"
+"Option 1"
+"Option 2"
+"First"
+"Second"
 ```
+
+Playback:
+
+```text
+"Play"
+"Pause"
+"Next video"
+"Skip ad"
+```
+
+> YouTube UI changes can affect automation compatibility.
 
 ---
 
-## 4. Cloud AI Integration
+# 5. Gemini AI Integration
 
-### Google Gemini Developer API
+Blind AI Assistant uses the **Google Gemini Developer API** for cloud-based AI functionality.
 
-Blind AI Assistant uses the Google Gemini Developer API for functionality requiring cloud-based generative AI.
-
-The integration supports:
+Gemini is used for:
 
 * General questions
-* Natural-language reasoning
+* Reasoning
 * Image understanding
 * Scene description
 * Text interpretation
 * Multimodal assistance
 
-The Android application communicates with the API using Ktor.
-
-### API Configuration
-
-The Gemini API key is not stored directly in the source code.
-
-Create or edit:
+### Local vs Cloud
 
 ```text
-local.properties
+Battery / Torch / Volume / Time
+            ↓
+       Local Processing
+            ↓
+       No Gemini needed
 ```
 
-and add:
-
-```properties
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+```text
+"Explain quantum computing"
+            ↓
+          Gemini
+            ↓
+       Spoken Answer
 ```
-
-`local.properties` is excluded from Git through `.gitignore`.
-
-The key is injected into the application through Gradle `BuildConfig`.
-
-### Running Without an API Key
-
-The project can still compile without a Gemini API key.
-
-Local device commands do not require cloud AI.
 
 ---
 
-## 5. Security
+# 6. Security & API Configuration
 
-The project uses a repository-safe configuration for sensitive credentials.
+API credentials are stored locally and are not committed to Git.
 
-The following files and patterns are excluded from version control:
-
-```text
-local.properties
-.env
-.env.*
-*.env
-*.keystore
-*.jks
-```
-
-The public repository does not contain production API credentials.
-
-Developers should:
-
-1. Create their own Gemini API key.
-2. Store it only in `local.properties`.
-3. Never commit API keys.
-4. Never place credentials directly in source code.
-5. Rotate credentials immediately if they are accidentally exposed.
-
----
-
-## 6. Technical Evaluation Quickstart
-
-### Prerequisites
-
-Before building the project, install:
-
-* Android Studio
-* JDK 17
-* Android SDK
-* Android SDK Platform/API 26 or higher
-* Android SDK Build-Tools
-* A physical Android device or emulator
-* Internet connection for Gemini-powered functionality
-
-> **Note:** The Android SDK is required only for developers building the project from source. Normal users installing a pre-built APK do not need Android Studio, Gradle, or the Android SDK.
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/Kashan-Zahid/Blind-AI-Assistant.git
-cd Blind-AI-Assistant
-```
-
-### Open the Project
-
-The recommended method is to open the project in **Android Studio**.
-
-Android Studio will detect the project's Gradle configuration and use the Android SDK configured on the developer's machine.
-
-If Gradle cannot locate the Android SDK, configure the SDK through Android Studio's SDK settings or define the SDK location using the standard Android `local.properties` file.
-
-**Do not copy another developer's SDK path.** SDK paths are machine-specific.
-
-For example, a developer may have:
-
-```properties
-sdk.dir=/home/username/Android/Sdk
-```
-
-while another developer may have:
-
-```properties
-sdk.dir=C:\\Users\\username\\AppData\\Local\\Android\\Sdk
-```
-
-`local.properties` is intentionally excluded from Git because it can contain machine-specific configuration and project secrets.
-
-### Configure Gemini API Key
-
-Create or edit:
+Create:
 
 ```text
 local.properties
@@ -384,22 +352,115 @@ Add:
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 ```
 
-If your Android SDK is not automatically detected, the same file may also contain your machine-specific SDK path:
+If the Android SDK requires manual configuration:
 
 ```properties
-sdk.dir=/path/to/your/Android/Sdk
+sdk.dir=/home/your-username/Android/Sdk
 GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 ```
 
-**Never commit `local.properties` to Git.**
+`local.properties` is excluded from Git.
 
-### Run Tests
+Never commit:
+
+```text
+local.properties
+.env
+.env.*
+*.env
+*.jks
+*.keystore
+```
+
+Never hardcode API keys into Kotlin, XML, or Gradle source files.
+
+---
+
+# 7. Quickstart
+
+## Requirements
+
+Install:
+
+* Android Studio
+* JDK 17
+* Android SDK
+* Android SDK Platform 36
+* Android SDK Build-Tools
+* Android SDK Platform-Tools
+* Git
+
+For testing:
+
+* Android 8.0+ device/emulator
+* Internet connection for Gemini features
+
+### Clone
+
+```bash
+git clone https://github.com/Kashan-Zahid/Blind-AI-Assistant.git
+cd Blind-AI-Assistant
+```
+
+### Android SDK
+
+Android Studio normally detects the SDK automatically.
+
+For a common Linux SDK location:
+
+```bash
+printf 'sdk.dir=%s\n' "$HOME/Android/Sdk" > local.properties
+```
+
+Verify:
+
+```bash
+cat local.properties
+```
+
+Expected:
+
+```properties
+sdk.dir=/home/your-username/Android/Sdk
+```
+
+Check the SDK:
+
+```bash
+ls "$HOME/Android/Sdk"
+```
+
+Check ADB:
+
+```bash
+adb version
+```
+
+### Configure Gemini
+
+Edit:
+
+```text
+local.properties
+```
+
+and add:
+
+```properties
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+---
+
+# 8. Build, Test & Install
+
+## Test
 
 ```bash
 ./gradlew test
 ```
 
-Current project validation:
+Current validation:
 
 ```text
 93 tests
@@ -408,151 +469,154 @@ Current project validation:
 100% success
 ```
 
-### Build the Debug APK
+Coverage areas include:
+
+* Command processing
+* Intent routing
+* Normalization
+* English/Roman Urdu commands
+* YouTube filtering
+* Video selection
+* WhatsApp workflows
+* Calling
+* AI client
+* API error handling
+* Transcript state
+
+## Build
 
 ```bash
+chmod +x gradlew
 ./gradlew assembleDebug
 ```
 
 APK output:
 
 ```text
-composeApp/build/outputs/apk/debug/composeApp-debug.apk
+composeApp/build/outputs/apk/debug/
 ```
 
-### Install on Android
+Find it with:
 
-Connect an Android device with USB debugging enabled:
+```bash
+find composeApp/build/outputs -name "*.apk"
+```
+
+## Install
+
+Enable USB debugging and connect the Android device:
 
 ```bash
 adb devices
 ```
 
-Then:
+Install:
 
 ```bash
-adb install -r composeApp/build/outputs/apk/debug/composeApp-debug.apk
+adb install -r composeApp/build/outputs/apk/debug/*.apk
 ```
 
-Launch:
-
-```bash
-adb shell am start -n com.blindassistant/.MainActivity
-```
-
-### For End Users
-
-If a pre-built APK is provided, end users do **not** need:
-
-* Android Studio
-* JDK
-* Gradle
-* Android SDK
-* Source-code configuration
-
-They only need a compatible Android device and the APK.
-
----
-
-## 7. Quick Voice Commands Reference
-
-The following commands provide a quick overview of the assistant's voice interface.
-
-| Category             | Example Commands                      | Function                           |
-| -------------------- | ------------------------------------- | ---------------------------------- |
-| **Daily Essentials** | `time`, `date`, `battery`, `wifi`     | Provides device information        |
-| **Flashlight**       | `torch`, `torch off`                  | Controls the flashlight            |
-| **Volume**           | `louder`, `quieter`, `mute`, `unmute` | Controls audio volume              |
-| **Camera**           | `describe`, `look`, `camera`          | Starts visual assistance           |
-| **Photo**            | `take photo`, `snapshot`              | Captures an image                  |
-| **Money**            | `money`, `cash`, `count money`        | Identifies currency                |
-| **Text**             | `read text`, `read sign`, `ocr`       | Reads visible text                 |
-| **Documents**        | `read document`, `document`           | Reads documents                    |
-| **WhatsApp**         | `whatsapp [name] saying [message]`    | Sends WhatsApp messages            |
-| **Messages**         | `read message`, `last message`        | Reads available messages           |
-| **Voice Notes**      | `play it`, `play voice note`          | Plays a received voice message     |
-| **YouTube**          | `youtube [query]`                     | Performs YouTube voice search      |
-| **Video Selection**  | `option 1`, `option 2`, `first`       | Selects a search result            |
-| **Playback**         | `play`, `pause`, `next video`         | Controls media                     |
-| **Calling**          | `call [name]`, `call [number]`        | Makes a phone call                 |
-| **Alarms**           | `alarm 7 am`                          | Creates an alarm                   |
-| **Timers**           | `timer 5 minutes`                     | Creates a timer                    |
-| **AI Questions**     | `explain gravity simply`              | Sends a general question to Gemini |
-
-### Complete Voice Command Reference
-
-For the complete list of supported commands, examples, and command categories, see:
-
-**[📄 CommandsList.txt — Complete Voice Command Reference](CommandsList.txt)**
-
-The file contains the detailed command reference for users, testers, and hackathon judges.
-
----
-
-## 8. Live Demonstration Sequence
-
-A short demonstration can be performed using the following sequence.
-
-| Step   | Voice Command                                      | Expected Behavior                          |
-| ------ | -------------------------------------------------- | ------------------------------------------ |
-| **1**  | `Hello`                                            | Assistant responds using voice             |
-| **2**  | `Battery`                                          | Reads the current battery level locally    |
-| **3**  | `Torch`                                            | Turns on the flashlight                    |
-| **4**  | `Torch off`                                        | Turns off the flashlight                   |
-| **5**  | `Describe`                                         | Opens the camera assistance interface      |
-| **6**  | `Take photo`                                       | Captures and analyzes an image             |
-| **7**  | `Close camera`                                     | Closes the camera interface                |
-| **8**  | `YouTube coke studio`                              | Opens YouTube and processes search results |
-| **9**  | `Option 1`                                         | Selects the first available result         |
-| **10** | `Pause`                                            | Controls playback                          |
-| **11** | `Send WhatsApp to [Name] saying I am almost there` | Performs supported WhatsApp automation     |
-| **12** | `Explain gravity simply`                           | Sends a general question to Gemini         |
-
----
-
-## 9. Accessibility Configuration
-
-Some features require Android accessibility permissions.
-
-### Enable AccessibilityService
-
-Open:
+Package:
 
 ```text
-Android Settings
-    ↓
-Accessibility
-    ↓
-Installed Apps / Downloaded Apps
-    ↓
-Blind AI Assistant
-    ↓
-Enable Accessibility Service
+com.blindassistant
 ```
-
-The accessibility service enables supported automation features such as:
-
-* WhatsApp interaction
-* YouTube interaction
-* Voice-driven UI navigation
-* Hands-free actions
-
-### Permissions
-
-Depending on the functionality being used, Android may request:
-
-* Microphone
-* Camera
-* Contacts
-* Phone
-* Notifications
-* AccessibilityService access
-
-Permissions are used only for features that require them.
 
 ---
 
-## 10. Project Structure
+# 9. Permissions & Accessibility
+
+Depending on features used, Android may request:
+
+* 🎤 Microphone
+* 📷 Camera
+* 👤 Contacts
+* 📞 Phone
+* 🔔 Notifications
+* ♿ AccessibilityService
+
+Enable accessibility through:
+
+```text
+Settings
+  ↓
+Accessibility
+  ↓
+Installed Apps / Downloaded Apps
+  ↓
+Blind AI Assistant
+  ↓
+Enable
+```
+
+Menu names vary between Android manufacturers.
+
+AccessibilityService enables supported:
+
+* WhatsApp automation
+* YouTube automation
+* UI interaction
+* Voice-driven navigation
+
+---
+
+# 10. Voice Commands
+
+| Category    | Examples                           | Function               |
+| ----------- | ---------------------------------- | ---------------------- |
+| Essentials  | `time`, `date`, `battery`, `wifi`  | Device information     |
+| Flashlight  | `torch`, `torch off`               | Flashlight             |
+| Volume      | `louder`, `quieter`, `mute`        | Audio                  |
+| Camera      | `describe`, `look`, `camera`       | Visual assistance      |
+| Photo       | `take photo`, `snapshot`           | Image capture          |
+| Money       | `money`, `cash`, `count money`     | Currency recognition   |
+| Text        | `read text`, `read sign`, `ocr`    | Text reading           |
+| Documents   | `read document`                    | Document assistance    |
+| WhatsApp    | `whatsapp [name] saying [message]` | Messaging              |
+| Messages    | `read message`, `last message`     | Message reading        |
+| Voice Notes | `play it`, `play voice note`       | Voice-message playback |
+| YouTube     | `youtube [query]`                  | Voice search           |
+| Selection   | `option 1`, `first`                | Select result          |
+| Playback    | `play`, `pause`, `next video`      | Media                  |
+| Calling     | `call [name]`, `call [number]`     | Phone call             |
+| Alarms      | `alarm 7 am`                       | Create alarm           |
+| Timers      | `timer 5 minutes`                  | Create timer           |
+| AI          | `explain gravity simply`           | Gemini                 |
+
+For the complete command list:
+
+```text
+CommandsList.txt
+```
+
+---
+
+# 11. Demo Flow
+
+A quick demonstration:
+
+```text
+1. "Hello"
+2. "Battery"
+3. "Torch"
+4. "Torch off"
+5. "Describe"
+6. "Take photo"
+7. "Close camera"
+8. "YouTube Coke Studio"
+9. "Option 1"
+10. "Pause"
+11. "Send WhatsApp to [Name] saying I am almost there"
+12. "Explain gravity simply"
+```
+
+This demonstrates:
+
+**Voice → Local Commands → Camera Vision → Accessibility Automation → Gemini AI**
+
+---
+
+# 12. Project Structure
 
 ```text
 Blind-AI-Assistant/
@@ -560,23 +624,20 @@ Blind-AI-Assistant/
 ├── composeApp/
 │   └── src/
 │       ├── androidMain/
-│       │   ├── kotlin/
-│       │   │   └── com/blindassistant/
-│       │   │       ├── MainActivity.kt
-│       │   │       ├── AiClient.kt
-│       │   │       ├── CommandProcessor.kt
-│       │   │       ├── DeviceController.kt
-│       │   │       ├── ContactsAndCallManager.kt
-│       │   │       ├── BlindAccessibilityService.kt
-│       │   │       ├── CameraVisionManager.kt
-│       │   │       └── ...
-│       │   │
+│       │   ├── kotlin/com/blindassistant/
+│       │   │   ├── MainActivity.kt
+│       │   │   ├── AiClient.kt
+│       │   │   ├── CommandProcessor.kt
+│       │   │   ├── DeviceController.kt
+│       │   │   ├── ContactsAndCallManager.kt
+│       │   │   ├── BlindAccessibilityService.kt
+│       │   │   ├── CameraVisionManager.kt
+│       │   │   └── ...
 │       │   └── res/
 │       │
 │       └── commonMain/
 │
 ├── gradle/
-│
 ├── CommandsList.txt
 ├── README.md
 ├── .gitignore
@@ -589,121 +650,159 @@ Blind-AI-Assistant/
 
 ---
 
-## 11. Testing
+# 13. Troubleshooting
 
-The project includes unit tests covering the core application logic.
+### SDK location not found
 
-Current validation:
-
-```text
-93 tests
-93 passed
-0 failed
-100% success
-```
-
-Test areas include:
-
-* Command processing
-* Intent routing
-* Conversational normalization
-* YouTube result filtering
-* Video selection
-* WhatsApp workflows
-* Calling workflows
-* AI client behavior
-* API error handling
-* Live transcript state
-
-Run the complete suite:
+Create `local.properties`:
 
 ```bash
-./gradlew test
+printf 'sdk.dir=%s\n' "$HOME/Android/Sdk" > local.properties
 ```
 
----
-
-## 12. Limitations
-
-Blind AI Assistant is an active Android accessibility project, and some functionality depends on Android versions, device hardware, installed applications, and external service behavior.
-
-Examples:
-
-* Accessibility automation can be affected by changes to third-party application interfaces.
-* YouTube behavior is controlled by the YouTube application.
-* WhatsApp automation depends on available accessibility nodes and notification behavior.
-* Gemini-powered functionality requires an internet connection and valid API credentials.
-* Camera capabilities vary between Android devices and camera hardware.
-* Android platform security restrictions can limit certain system operations.
-
-The application therefore separates local functionality from cloud-dependent functionality wherever practical.
-
----
-
-## 13. Roadmap
-
-Future development may include:
-
-* Expanded offline capabilities
-* Additional language support
-* More robust accessibility automation
-* Improved object recognition
-* Enhanced document understanding
-* Faster vision processing
-* Additional Android system integrations
-* Expanded automated testing
-* Improved device compatibility
-
----
-
-## 14. Contributing
-
-Contributions are welcome.
-
-Before submitting a pull request:
-
-1. Create a feature branch.
-2. Keep changes focused.
-3. Do not commit API keys or private configuration files.
-4. Run the test suite.
-5. Test Android-specific changes on a physical device when possible.
-6. Update `CommandsList.txt` when adding or changing voice commands.
-7. Update the README when functionality changes.
-
-Example:
-
-```bash
-git checkout -b feature/new-command
-```
-
-Run tests:
-
-```bash
-./gradlew test
-```
-
-Build:
+Then:
 
 ```bash
 ./gradlew assembleDebug
 ```
 
+If that path does not exist, find the SDK location from Android Studio:
+
+```text
+Settings / Preferences
+→ Languages & Frameworks
+→ Android SDK
+```
+
+### Gradle permission denied
+
+```bash
+chmod +x gradlew
+```
+
+### Wrong Java version
+
+```bash
+java -version
+./gradlew --version
+```
+
+Use **JDK 17**.
+
+### Gemini not responding
+
+Check:
+
+```text
+local.properties
+```
+
+for:
+
+```properties
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+Also verify internet access and API-key validity.
+
+### Accessibility automation not working
+
+Check that:
+
+1. The service is enabled.
+2. Required permissions are granted.
+3. The target application is installed.
+4. The target app has not changed its UI/accessibility structure.
+
 ---
 
-## 15. License & Acknowledgements
+# 14. Limitations & Roadmap
 
-Developed for the Alibaba Cloud AI Hackathon Pakistan 2026.
-Licensed under the MIT License.
-See the LICENSE file for the complete license text.
+## Limitations
+
+Some functionality depends on:
+
+* Android version
+* Device hardware
+* Manufacturer-specific behavior
+* Third-party application UI
+* Accessibility nodes
+* Internet connectivity
+* Gemini API availability
+* Camera capabilities
+* Android security restrictions
+
+## Roadmap
+
+Planned/improvable areas include:
+
+* Expanded offline AI
+* Offline vision
+* Additional languages
+* More robust accessibility automation
+* Improved object recognition
+* Enhanced document understanding
+* Faster vision processing
+* More Android integrations
+* Expanded automated testing
+* Better device compatibility
 
 ---
 
-## 16. Project Goal
+# 15. Hackathon & Project Goal
 
-Blind AI Assistant is built around a simple principle:
+Developed for the **Alibaba Cloud AI Hackathon Pakistan 2026**.
+
+The project combines:
+
+```text
+Android
++
+Kotlin Multiplatform
++
+AccessibilityService
++
+Camera2
++
+Speech Recognition
++
+Text-to-Speech
++
+Gemini AI
+```
+
+to address a practical accessibility problem.
 
 > **Technology should be usable without requiring vision.**
 
-The project aims to provide a practical voice-first interface that allows blind and visually impaired users to interact with essential smartphone functions, communication tools, media, camera assistance, and AI through spoken commands.
+Blind AI Assistant aims to make everyday smartphone interaction more accessible by allowing users to perform essential device operations, communicate, control media, access visual information, and interact with AI through spoken commands.
 
-The long-term goal is to make everyday Android interaction more accessible, direct, and less dependent on visual interfaces.
+---
+
+# 16. Contributing
+
+Before submitting changes:
+
+1. Create a feature branch.
+2. Keep changes focused.
+3. Never commit API keys or private configuration.
+4. Run tests.
+5. Test Android-specific features on a physical device when possible.
+6. Update `CommandsList.txt` when commands change.
+7. Update the README when functionality or setup changes.
+
+```bash
+git checkout -b feature/new-command
+./gradlew test
+./gradlew assembleDebug
+```
+
+---
+
+# License
+
+Developed for the **Alibaba Cloud AI Hackathon Pakistan 2026**.
+
+Licensed under the **MIT License**.
+
+See `LICENSE` for the complete license text.
